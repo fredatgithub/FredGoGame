@@ -1,7 +1,7 @@
 <Window x:Class="FredGoGame.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Fred Go — Jouer au Go" Height="760" Width="1050"
+        Title="Fred Go — Jouer au Go - Version 1.0.0" Height="760" Width="1050"
         MinHeight="620" MinWidth="850"
         WindowStartupLocation="CenterScreen"
         Background="#F3F0E8">
