@@ -8,6 +8,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    <StartupObject>FredGoGame.App</StartupObject>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
 </Project>
