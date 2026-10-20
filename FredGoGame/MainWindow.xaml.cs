@@ -3,6 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Reflection;
 using Stone = FredGoGame.Enumerations.Stone;
 
 namespace FredGoGame
@@ -23,6 +24,10 @@ namespace FredGoGame
     public MainWindow()
     {
       InitializeComponent();
+      string version = Assembly.GetExecutingAssembly()
+          .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+          ?? throw new InvalidOperationException("La version de l’application est absente.");
+      Title = $"Fred Go — Jouer au Go - Version {version}";
       StartNewGame();
     }
 
