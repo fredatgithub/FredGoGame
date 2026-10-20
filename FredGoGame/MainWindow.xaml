@@ -1,0 +1,77 @@
+<Window x:Class="FredGoGame.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Fred Go — Jouer au Go" Height="760" Width="1050"
+        MinHeight="620" MinWidth="850"
+        WindowStartupLocation="CenterScreen"
+        Background="#F3F0E8">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="#2F5D50"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0,6,0,0"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="24">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="260"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,18">
+            <TextBlock Text="FRED GO" FontSize="28" FontWeight="Bold" Foreground="#263B34"/>
+            <TextBlock Text="Le jeu de Go — vous jouez les Noirs, l’ordinateur les Blancs."
+                       FontSize="14" Foreground="#66736D" Margin="0,3,0,0"/>
+        </StackPanel>
+
+        <Border Grid.Row="1" Grid.Column="0" Background="#DDBB7C" CornerRadius="8"
+                Padding="12" Margin="0,0,20,0">
+            <Viewbox Stretch="Uniform">
+                <Canvas x:Name="BoardCanvas" Width="600" Height="600"
+                        Background="#DDBB7C" MouseLeftButtonDown="BoardCanvas_MouseLeftButtonDown"/>
+            </Viewbox>
+        </Border>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="PARTIE" FontSize="12" FontWeight="Bold" Foreground="#78837E"/>
+                <TextBlock x:Name="StatusText" Text="À vous de jouer — posez une pierre noire."
+                           TextWrapping="Wrap" FontSize="16" FontWeight="SemiBold"
+                           Foreground="#263B34" Margin="0,8,0,18"/>
+
+                <TextBlock Text="TAILLE DU PLATEAU" FontSize="12" FontWeight="Bold" Foreground="#78837E"/>
+                <ComboBox x:Name="BoardSizeSelector" SelectedIndex="0" Margin="0,8,0,14"
+                          Padding="8" SelectionChanged="BoardSizeSelector_SelectionChanged">
+                    <ComboBoxItem Content="9 × 9 — rapide"/>
+                    <ComboBoxItem Content="13 × 13 — intermédiaire"/>
+                    <ComboBoxItem Content="19 × 19 — classique"/>
+                </ComboBox>
+
+                <TextBlock Text="SCORE PROVISOIRE" FontSize="12" FontWeight="Bold" Foreground="#78837E"/>
+                <TextBlock x:Name="ScoreText" Text="Noirs 0  ·  Blancs 6,5"
+                           FontSize="17" FontWeight="SemiBold" Foreground="#263B34" Margin="0,8,0,4"/>
+                <TextBlock Text="Comptage par territoire (règle de zone), avec 6,5 points de komi pour les Blancs."
+                           TextWrapping="Wrap" FontSize="12" Foreground="#78837E" Margin="0,0,0,14"/>
+
+                <Button x:Name="PassButton" Content="Passer son tour" Click="PassButton_Click"/>
+                <Button Content="Nouvelle partie" Click="NewGameButton_Click"
+                        Background="#68756F"/>
+
+                <Separator Margin="0,20,0,14"/>
+                <TextBlock Text="COMMENT JOUER" FontSize="12" FontWeight="Bold" Foreground="#78837E"/>
+                <TextBlock Text="Cliquez sur une intersection pour poser une pierre. Capturez les pierres adverses en leur retirant toutes leurs libertés. Deux passes consécutives terminent la partie."
+                           TextWrapping="Wrap" FontSize="13" Foreground="#4F5D57" Margin="0,8,0,0"/>
+                <TextBlock Text="L’ordinateur joue une stratégie heuristique simple. La règle du ko est appliquée sous forme de superko positionnel."
+                           TextWrapping="Wrap" FontSize="12" Foreground="#78837E" Margin="0,10,0,0"/>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Window>
