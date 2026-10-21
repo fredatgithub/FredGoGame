@@ -9,9 +9,9 @@ Une application de bureau WPF en C# pour jouer au Go contre l’ordinateur.
 
 ## Lancer le jeu
 
-Télécharger la dernière version.
+Télécharger la dernière version dans la [section Release](https://github.com/fredatgithub/FredGoGame/releases).
 
-Décompresser le fichier zip dans un répertoire.
+Décompresser le fichier zip dans un répertoire en local.
 
 Depuis ce dossier, exécutez :
 
