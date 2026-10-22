@@ -172,16 +172,16 @@ namespace FredGoGame
       int liberties = candidate.GetGroup(x, y).Liberties;
       score += Math.Min(liberties, 5) * 0.35;
 
-      foreach ((int nx, int ny) in GetNeighbors(x, y))
+      foreach ((int nx, int ny) in candidate.GetNeighbors(x, y))
       {
-        if (_board[nx, ny] == Stone.White)
+        if (candidate._board[nx, ny] == Stone.White)
         {
           score += 1.8;
         }
-        else if (_board[nx, ny] == Stone.Black)
+        else if (candidate._board[nx, ny] == Stone.Black)
         {
           score += 1.6;
-          if (GetGroup(nx, ny).Liberties == 1)
+          if (candidate.GetGroup(nx, ny).Liberties == 1)
           {
             score += 4;
           }
