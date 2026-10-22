@@ -20,7 +20,7 @@ FredGoGame.exe
 ## Jouer
 
 - Vous jouez les Noirs et commencez la partie ; l’ordinateur joue les Blancs.
-- Choisissez un plateau de 9 × 9, 13 × 13 ou 19 × 19.
+- Choisissez un plateau (appelé Goban) de 9 × 9, 13 × 13 ou 19 × 19.
 - Cliquez sur une intersection pour poser une pierre.
 - Les pierres ou groupes sans liberté sont capturés. Les coups suicidaires et les répétitions de position (superko positionnel) sont interdits.
 - Vous pouvez passer votre tour. Deux passes consécutives terminent la partie.
