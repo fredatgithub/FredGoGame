@@ -27,7 +27,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,18">
-            <TextBlock Text="FRED GO" FontSize="28" FontWeight="Bold" Foreground="#263B34"/>
+            <TextBlock Text="Fred Go game" FontSize="28" FontWeight="Bold" Foreground="#263B34"/>
             <TextBlock Text="Le jeu de Go — vous jouez les Noirs, l’ordinateur les Blancs."
                        FontSize="14" Foreground="#66736D" Margin="0,3,0,0"/>
         </StackPanel>
