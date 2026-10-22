@@ -25,6 +25,7 @@ FredGoGame.exe
 - Les pierres ou groupes sans liberté sont capturés. Les coups suicidaires et les répétitions de position (superko positionnel) sont interdits.
 - Vous pouvez passer votre tour. Deux passes consécutives terminent la partie.
 - Le score provisoire et le résultat final utilisent un comptage de zone simplifié, avec 6,5 points de komi pour les Blancs.
+- Chaque partie est enregistrée au format SGF dans le dossier `Documents\Go-Games` lorsqu’elle se termine, lorsqu’une nouvelle partie est lancée ou lorsque l’application est fermée. Le fichier contient les coups, les passes, les noms `joueurHumain` et `joueurOrdinateur`, et le résultat lorsqu’il est disponible.
 
 ## À propos de l’ordinateur
 

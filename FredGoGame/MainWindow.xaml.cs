@@ -4,6 +4,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Reflection;
+using System.ComponentModel;
+using System.Globalization;
+using System.IO;
+using System.Text;
+using Path = System.IO.Path;
 using Stone = FredGoGame.Enumerations.Stone;
 
 namespace FredGoGame
@@ -13,6 +18,7 @@ namespace FredGoGame
     private const double BoardExtent = 600;
     private const double BoardMargin = 32;
     private const double Komi = 6.5;
+    private readonly List<(Stone Color, int? X, int? Y)> _moves = [];
     private GameEngine? _game;
     private int _boardSize = 9;
     private int _consecutivePasses;
@@ -20,6 +26,8 @@ namespace FredGoGame
     private int _lastY = -1;
     private bool _isThinking;
     private bool _isFinished;
+    private bool _isChangingBoardSize;
+    private bool _currentGameSaved;
 
     public MainWindow()
     {
@@ -31,8 +39,13 @@ namespace FredGoGame
       StartNewGame();
     }
 
-    private void StartNewGame()
+    private bool StartNewGame()
     {
+      if (_game is not null && !SaveCurrentGame())
+      {
+        return false;
+      }
+
       _boardSize = BoardSizeSelector.SelectedIndex switch
       {
         1 => 13,
@@ -40,6 +53,8 @@ namespace FredGoGame
         _ => 9
       };
       _game = new GameEngine(_boardSize);
+      _moves.Clear();
+      _currentGameSaved = false;
       _consecutivePasses = 0;
       _lastX = -1;
       _lastY = -1;
@@ -49,17 +64,30 @@ namespace FredGoGame
       PassButton.IsEnabled = true;
       UpdateScore();
       DrawBoard();
+      return true;
     }
 
     private void BoardSizeSelector_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-      if (_game is not null)
+      if (_game is not null && !_isChangingBoardSize && !StartNewGame())
       {
-        StartNewGame();
+        _isChangingBoardSize = true;
+        BoardSizeSelector.SelectedIndex = _boardSize switch
+        {
+          13 => 1,
+          19 => 2,
+          _ => 0
+        };
+        _isChangingBoardSize = false;
       }
     }
 
     private void NewGameButton_Click(object sender, RoutedEventArgs e) => StartNewGame();
+
+    private void Window_Closing(object? sender, CancelEventArgs e)
+    {
+      e.Cancel = !SaveCurrentGame();
+    }
 
     private async void BoardCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
@@ -86,6 +114,7 @@ namespace FredGoGame
         return;
       }
 
+      _moves.Add((Stone.Black, x, y));
       _lastX = x;
       _lastY = y;
       _consecutivePasses = 0;
@@ -140,6 +169,7 @@ namespace FredGoGame
           throw new InvalidOperationException("L’ordinateur a proposé un coup illégal.");
         }
 
+        _moves.Add((Stone.White, move.Value.X, move.Value.Y));
         _lastX = move.Value.X;
         _lastY = move.Value.Y;
         _consecutivePasses = 0;
@@ -159,6 +189,7 @@ namespace FredGoGame
 
     private void RegisterPass(Stone color)
     {
+      _moves.Add((color, null, null));
       _lastX = -1;
       _lastY = -1;
       _consecutivePasses++;
@@ -176,6 +207,7 @@ namespace FredGoGame
                 : "La partie est nulle.";
         StatusText.Text = $"Partie terminée. {result}";
         UpdateScore();
+        SaveCurrentGame();
         return;
       }
 
@@ -186,6 +218,89 @@ namespace FredGoGame
       else
       {
         StatusText.Text = "L’ordinateur passe. À vous de jouer, ou passez pour compter les points.";
+      }
+    }
+
+    private bool SaveCurrentGame()
+    {
+      if (_game is null || _currentGameSaved)
+      {
+        return true;
+      }
+
+      try
+      {
+        var sgf = new StringBuilder();
+        sgf.Append("(;GM[1]FF[4]CA[UTF-8]AP[FredGoGame]SZ[")
+            .Append(_boardSize)
+            .Append("]KM[")
+            .Append(Komi.ToString("0.#", CultureInfo.InvariantCulture))
+            .Append("]PB[joueurHumain]PW[joueurOrdinateur]DT[")
+            .Append(DateTime.Now.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture))
+            .Append(']');
+
+        if (_isFinished)
+        {
+          (double black, double white) = _game.CalculateScore(Komi);
+          string result = black > white
+              ? $"B+{(black - white).ToString("0.#", CultureInfo.InvariantCulture)}"
+              : white > black
+                  ? $"W+{(white - black).ToString("0.#", CultureInfo.InvariantCulture)}"
+                  : "0";
+          sgf.Append("RE[").Append(result).Append(']');
+        }
+
+        foreach ((Stone color, int? x, int? y) in _moves)
+        {
+          sgf.Append(';').Append(color == Stone.Black ? 'B' : 'W').Append('[');
+          if (x.HasValue && y.HasValue)
+          {
+            sgf.Append((char)('a' + x.Value)).Append((char)('a' + y.Value));
+          }
+          sgf.Append(']');
+        }
+        sgf.Append(')');
+
+        string directory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "Go-Games");
+        Directory.CreateDirectory(directory);
+
+        string timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss", CultureInfo.InvariantCulture);
+        string baseName = $"Go-Game-{timestamp}";
+        for (int suffix = 1; ; suffix++)
+        {
+          string fileName = suffix == 1 ? $"{baseName}.sgf" : $"{baseName}-{suffix}.sgf";
+          string path = Path.Combine(directory, fileName);
+          FileStream stream;
+          try
+          {
+            stream = new FileStream(path, FileMode.CreateNew, FileAccess.Write, FileShare.None);
+          }
+          catch (IOException) when (File.Exists(path))
+          {
+            continue;
+          }
+
+          using (stream)
+          using (var writer = new StreamWriter(stream, new UTF8Encoding(false)))
+          {
+            writer.Write(sgf);
+          }
+          _currentGameSaved = true;
+          return true;
+        }
+      }
+      catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or
+                                 ArgumentException or NotSupportedException or
+                                 System.Security.SecurityException)
+      {
+        MessageBox.Show(
+            $"La partie n’a pas pu être enregistrée dans Documents\\Go-Games.\n\n{ex.Message}",
+            "Enregistrement impossible",
+            MessageBoxButton.OK,
+            MessageBoxImage.Error);
+        return false;
       }
     }
 
